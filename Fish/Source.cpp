@@ -7,7 +7,6 @@
 #include "ConfigHandler.h"
 
 using namespace std;
-//using namespace fishConfig;
 using Random = effolkronium::random_static;
 
 
@@ -31,7 +30,6 @@ struct UI_State
      timer_R, timer_G, timer_B, timer_A;
 
 };
-
 
 struct Player_State
 {
@@ -63,23 +61,21 @@ struct Fish_State
 bool Init_UI_Variables(ConfigHandler& hCfg, UI_State& UIConfig, Fish_State& fCfg);
 bool Init_Player_Variables(ConfigHandler& cfgHandler, Player_State& plCfg);
 bool Init_Fish_Variables(ConfigHandler& hCfg, Fish_State& fishCfg);
-
 void Fixed_Update(sf::Time& tst, sf::Time tps, Player_State& pCfg, Fish_State& fCfg);
-
 bool isOnTarget(Player_State& playerConfig, Fish_State& fishConfig);
-
 void BatchRender(sf::RenderWindow& window, vector<sf::Drawable*> drawables);
 
-     const int MARKER_DROP_RATE = 5;
-     const int MARKER_RISE_RATE = -7;
+#pragma region Need a new non-Global home
+const int MARKER_DROP_RATE = 5;
+const int MARKER_RISE_RATE = -7;
 
-     int MarkerDropRate() { return MARKER_DROP_RATE; }
-     int MarkerRiseRate() { return MARKER_RISE_RATE; }
+int MarkerDropRate() { return MARKER_DROP_RATE; }
+int MarkerRiseRate() { return MARKER_RISE_RATE; }
 
+const int FRAMES_PER_FISH_POS = 300;
+int FRAMES_REMAINING = FRAMES_PER_FISH_POS;
+#pragma endregion
      
-
-     const int FRAMES_PER_FISH_POS = 300;
-     int FRAMES_REMAINING = FRAMES_PER_FISH_POS;
 
 int main()
 {     
@@ -106,6 +102,7 @@ int main()
 
      vector<sf::Drawable*> drawables;
      drawables.push_back(&UIConfig.frameSprite);
+     drawables.push_back(&playerConfig.playerMarker);
      drawables.push_back(&meter);
 
      float targetPhysicsFPS = 60;
@@ -117,7 +114,7 @@ int main()
      while (window.isOpen())
      {
           meter.Update(physicsClock.getElapsedTime().asSeconds());
-          cout << "x:" <<meter.getPosition().x << ", " << "y:" << meter.getPosition().y << "\tw: " << meter.getSize().x << ", " << "h:" << meter.getSize().y << endl;
+          //cout << "x:" <<meter.getPosition().x << ", " << "y:" << meter.getPosition().y << "\tw: " << meter.getSize().x << ", " << "h:" << meter.getSize().y << endl;
           timeSinceTick += physicsClock.restart();      
           sf::Event event;
           while (window.pollEvent(event))

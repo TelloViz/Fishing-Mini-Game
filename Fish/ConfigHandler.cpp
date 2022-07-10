@@ -19,8 +19,8 @@ bool ConfigHandler::ReadConfigFile()
                lines.push_back(line);          
      }
 
-     for (const auto& i : lines)
-          cout << i << endl;
+    /* for (const auto& i : lines)
+          cout << i << endl;*/
 
      input_file.close();
 
@@ -51,7 +51,7 @@ bool ConfigHandler::WriteConfigFile()
           
           file_out.close();
           // file_out << "Some random text to write." << endl;
-          cout << "Done Writing!" << endl;
+          //cout << "Done Writing!" << endl;
      }
 
      return EXIT_SUCCESS;
