@@ -83,7 +83,7 @@ void BatchRender(sf::RenderWindow& window, vector<sf::Drawable*> drawables);
 
 int main()
 {     
-     TimeMeter* meter;
+     
 
      ConfigHandler hCfg;
      hCfg.ReadConfigFile(); 
@@ -97,13 +97,16 @@ int main()
      UI_State UIConfig;
      Init_UI_Variables(hCfg, UIConfig, fishConfig);
 
-     sf::RenderWindow window(sf::VideoMode(stoi(UIConfig.windowWidth), stoi(UIConfig.windowHeight)), "Fishing!");
+     TimeMeter meter;
+     meter.setFillColor(sf::Color(stoi(UIConfig.timer_R), stoi(UIConfig.timer_G), stoi(UIConfig.timer_B), stoi(UIConfig.timer_A)));
+     meter.setSize(sf::Vector2f(stoi(UIConfig.timerWidth), stoi(UIConfig.timerMaxHeight)));
+     meter.setPosition(sf::Vector2f(stoi(UIConfig.timer_X), stoi(UIConfig.timer_Y)));
 
-     
+     sf::RenderWindow window(sf::VideoMode(stoi(UIConfig.windowWidth), stoi(UIConfig.windowHeight)), "Fishing!");     
 
      vector<sf::Drawable*> drawables;
      drawables.push_back(&UIConfig.frameSprite);
-
+     drawables.push_back(&meter);
 
      float targetPhysicsFPS = 60;
      sf::Time targetPhysicsSPF = sf::seconds(1 / targetPhysicsFPS);
@@ -113,7 +116,8 @@ int main()
 #pragma region MainLoop
      while (window.isOpen())
      {
-//          meter->Update(physicsClock.getElapsedTime().asSeconds());
+          meter.Update(physicsClock.getElapsedTime().asSeconds());
+          cout << "x:" <<meter.getPosition().x << ", " << "y:" << meter.getPosition().y << "\tw: " << meter.getSize().x << ", " << "h:" << meter.getSize().y << endl;
           timeSinceTick += physicsClock.restart();      
           sf::Event event;
           while (window.pollEvent(event))
@@ -130,7 +134,7 @@ int main()
           if (isOnTarget(playerConfig, fishConfig))
           {          
                playerConfig.playerMarker.setFillColor(sf::Color(stoi(playerConfig.player_active_R), stoi(playerConfig.player_active_G), stoi(playerConfig.player_active_B), stoi(playerConfig.player_active_A)));
-              // meter->IncreaseRemaining(0.05f);
+               meter.IncreaseRemaining(0.05f);
           }
           else playerConfig.playerMarker.setFillColor(sf::Color(stoi(playerConfig.player_R), stoi(playerConfig.player_G), stoi(playerConfig.player_B), stoi(playerConfig.player_A)));
 
