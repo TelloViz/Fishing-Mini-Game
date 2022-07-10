@@ -2,7 +2,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "random.hpp"
-#include "Config.hpp"
 #include "TimeMeter.h"
 #include "Fish.h"
 #include "ConfigHandler.h"
@@ -12,7 +11,7 @@ using namespace std;
 using Random = effolkronium::random_static;
 
 
-struct UI_Config
+struct UI_State
 {
      string
           canvasWidth{}, 
@@ -34,7 +33,7 @@ struct UI_Config
 };
 
 
-struct Player_Config
+struct Player_State
 {
      string
           player_W,
@@ -54,20 +53,20 @@ struct Player_Config
      sf::RectangleShape playerMarker;
 };
 
-struct Fish_Config
+struct Fish_State
 {
      Fish fish;
      sf::Texture fishTexture;
      string fishIconPath;
 };
 
-bool Init_UI_Variables(ConfigHandler& hCfg, UI_Config& UIConfig, Fish_Config& fCfg);
-bool Init_Player_Variables(ConfigHandler& cfgHandler, Player_Config& plCfg);
-bool Init_Fish_Variables(ConfigHandler& hCfg, Fish_Config& fishCfg);
+bool Init_UI_Variables(ConfigHandler& hCfg, UI_State& UIConfig, Fish_State& fCfg);
+bool Init_Player_Variables(ConfigHandler& cfgHandler, Player_State& plCfg);
+bool Init_Fish_Variables(ConfigHandler& hCfg, Fish_State& fishCfg);
 
-void Fixed_Update(sf::Time& tst, sf::Time tps, Player_Config& pCfg, Fish_Config& fCfg);
+void Fixed_Update(sf::Time& tst, sf::Time tps, Player_State& pCfg, Fish_State& fCfg);
 
-bool isOnTarget(Player_Config& playerConfig, Fish_Config& fishConfig);
+bool isOnTarget(Player_State& playerConfig, Fish_State& fishConfig);
 
 void BatchRender(sf::RenderWindow& window, vector<sf::Drawable*> drawables);
 
@@ -89,13 +88,13 @@ int main()
      ConfigHandler hCfg;
      hCfg.ReadConfigFile(); 
      
-     Player_Config playerConfig;
+     Player_State playerConfig;
      Init_Player_Variables(hCfg, playerConfig);
 
-     Fish_Config fishConfig;
+     Fish_State fishConfig;
      Init_Fish_Variables(hCfg, fishConfig);
      
-     UI_Config UIConfig;
+     UI_State UIConfig;
      Init_UI_Variables(hCfg, UIConfig, fishConfig);
 
      sf::RenderWindow window(sf::VideoMode(stoi(UIConfig.windowWidth), stoi(UIConfig.windowHeight)), "Fishing!");
@@ -103,16 +102,9 @@ int main()
      
 
      vector<sf::Drawable*> drawables;
-     //drawables.push_back(&UIConfig.frameSprite);
-     //drawables.push_back(&playerConfig.playerMarker);
-     //drawables.push_back(&fishConfig.fish);
+     drawables.push_back(&UIConfig.frameSprite);
 
 
-     bool isLeftPressed = false;
-     bool isMeterGrabbed = false;
-     bool isMarkerGrabbed = false;
-     sf::Vector2f meterGrabOffset{};
-     sf::Vector2f markerGrabOffset{};
      float targetPhysicsFPS = 60;
      sf::Time targetPhysicsSPF = sf::seconds(1 / targetPhysicsFPS);
      sf::Time timeSinceTick;
@@ -131,46 +123,9 @@ int main()
                
           }
 
-          // if left control key pressed we are trying to dev mode
-          if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl)) 
-          {
-
-               if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
-               {
-                   /* if (meter->getGlobalBounds().contains((sf::Vector2f)sf::Mouse::getPosition(window)) && !isMeterGrabbed && !isMarkerGrabbed)
-                    {
-                         isMeterGrabbed = true;
-                         meterGrabOffset = (sf::Vector2f)sf::Mouse::getPosition(window) - meter->getPosition();
-                    }
-                    else if (playerConfig.playerMarker.getGlobalBounds().contains((sf::Vector2f)sf::Mouse::getPosition(window)) && !isMarkerGrabbed && !isMeterGrabbed)
-                    {
-                         isMarkerGrabbed = true;
-                         markerGrabOffset = (sf::Vector2f)sf::Mouse::getPosition(window) - playerConfig.playerMarker.getPosition();
-                    }*/
-               }
-               else
-               {
-                    isMeterGrabbed = false;
-                    isMarkerGrabbed = false;
-               }
-          }
-
-          if (isMeterGrabbed)
-          {
-//               meter->setPosition((sf::Vector2f)sf::Mouse::getPosition(window)-meterGrabOffset);
-//               hCfg.AlterValue("TIMER_X", std::to_string(meter->getPosition().x));
-  //             hCfg.AlterValue("TIMER_Y", std::to_string(meter->getPosition().y));
-          }
-          else if (isMarkerGrabbed)
-          {
-               playerConfig.playerMarker.setPosition((sf::Vector2f)sf::Mouse::getPosition(window) - markerGrabOffset);
-               hCfg.AlterValue("PLAYER_X_POS", std::to_string(playerConfig.playerMarker.getPosition().x));
-               hCfg.AlterValue("PLAYER_Y_POS", std::to_string(playerConfig.playerMarker.getPosition().y));
-          }
-
-          
+                              
           Fixed_Update(timeSinceTick, targetPhysicsSPF, playerConfig, fishConfig);
-          //cout << (int)UIConfig.meter.getFillColor().r << ", " << (int)UIConfig.meter.getFillColor().g << ", " << (int)UIConfig.meter.getFillColor().b << endl;
+          
          
           if (isOnTarget(playerConfig, fishConfig))
           {          
@@ -191,7 +146,7 @@ int main()
      return 0;
 }
 
-bool Init_UI_Variables(ConfigHandler& hCfg, UI_Config& UIConfig, Fish_Config& fCfg)
+bool Init_UI_Variables(ConfigHandler& hCfg, UI_State& UIConfig, Fish_State& fCfg)
 {
      hCfg.FindConfig("DEFAULT_WINDOW_WIDTH", UIConfig.windowWidth);
      hCfg.FindConfig("DEFAULT_WINDOW_HEIGHT", UIConfig.windowHeight);
@@ -229,7 +184,7 @@ bool Init_UI_Variables(ConfigHandler& hCfg, UI_Config& UIConfig, Fish_Config& fC
      return true;
 }
 
-bool Init_Player_Variables(ConfigHandler& hCfg, Player_Config& playerConfig)
+bool Init_Player_Variables(ConfigHandler& hCfg, Player_State& playerConfig)
 {
      hCfg.FindConfig("PLAYER_INDICATOR_WIDTH", playerConfig.player_W);
      hCfg.FindConfig("PLAYER_INDICATOR_HEIGHT", playerConfig.player_H);
@@ -256,13 +211,29 @@ bool Init_Player_Variables(ConfigHandler& hCfg, Player_Config& playerConfig)
      return true;
 }
 
-bool Init_Fish_Variables(ConfigHandler& hCfg, Fish_Config& fishCfg)
+bool Init_Fish_Variables(ConfigHandler& hCfg, Fish_State& fishCfg)
 {
      hCfg.FindConfig("FISH_ICON_PATH", fishCfg.fishIconPath);
-     string fish_X, fish_Y;
+     string fish_X, fish_Y, fishDif;
 
      hCfg.FindConfig("DEFAULT_FISH_X_POS", fish_X);
      hCfg.FindConfig("DEFAULT_FISH_Y_POS", fish_Y);
+     hCfg.FindConfig("FISH_DIFFICULTY", fishDif);
+
+     switch (stoi(fishDif))
+     {
+     case 1:
+          fishCfg.fish.setDifficulty(Fish::DifficultyTier::EASY);
+          break;
+     case 2:
+          fishCfg.fish.setDifficulty(Fish::DifficultyTier::MEDIUM);
+          break;
+     case 3:
+          fishCfg.fish.setDifficulty(Fish::DifficultyTier::HARD);
+          break;
+     default:
+          break;
+     }
 
      if (!fishCfg.fishTexture.loadFromFile(fishCfg.fishIconPath))
      {
@@ -273,10 +244,14 @@ bool Init_Fish_Variables(ConfigHandler& hCfg, Fish_Config& fishCfg)
      
      fishCfg.fish.setTexture(fishCfg.fishTexture);
      fishCfg.fish.setPosition(stoi(fish_X), stoi(fish_Y));
+     
+
+
+     
      return true;
 }
 
-void Fixed_Update(sf::Time& tst, sf::Time tps, Player_Config& pCfg, Fish_Config& fCfg)
+void Fixed_Update(sf::Time& tst, sf::Time tps, Player_State& pCfg, Fish_State& fCfg)
 {
      while (tst >= tps)
      {
@@ -311,7 +286,7 @@ void Fixed_Update(sf::Time& tst, sf::Time tps, Player_Config& pCfg, Fish_Config&
      }
 }
 
-bool isOnTarget(Player_Config& playerConfig, Fish_Config& fishConfig)
+bool isOnTarget(Player_State& playerConfig, Fish_State& fishConfig)
 {
      float mTop = playerConfig.playerMarker.getPosition().y;
      float mBot = playerConfig.playerMarker.getPosition().y + playerConfig.playerMarker.getSize().y;

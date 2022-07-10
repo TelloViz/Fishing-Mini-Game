@@ -41,9 +41,6 @@
     <ClInclude Include="Indicator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Config.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="random.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
