@@ -6,7 +6,7 @@ class TimeMeter : public sf::RectangleShape
 public:
      explicit TimeMeter(sf::Vector2f size = sf::Vector2f(0.0f, 0.0f));
      TimeMeter(sf::Vector2f pos, sf::Vector2f dim);
-     TimeMeter(sf::Vector2f pos, sf::Vector2f dim, float dur);
+     TimeMeter(sf::Vector2f pos, sf::Vector2f dim, float dur,sf::Color fillColor);
      virtual ~TimeMeter() {}
 
      void IncreaseRemaining(float secIncrease) { m_secElapsed = m_secElapsed - secIncrease / m_secDuration; }

@@ -8,7 +8,7 @@
 #include "ConfigHandler.h"
 
 using namespace std;
-using namespace fishConfig;
+//using namespace fishConfig;
 using Random = effolkronium::random_static;
 
 
@@ -30,10 +30,6 @@ struct UI_Config
      string timer_X, timer_Y,
      timerWidth, timerMinHeight, timerMaxHeight,
      timer_R, timer_G, timer_B, timer_A;
-
-     TimeMeter meter;
-
-
 
 };
 
@@ -65,38 +61,51 @@ struct Fish_Config
      string fishIconPath;
 };
 
-bool Configure_UI(ConfigHandler& hCfg, UI_Config& UIConfig, Fish_Config& fCfg);
-bool Configure_Player(ConfigHandler& cfgHandler, Player_Config& plCfg);
-bool Configure_Fish(ConfigHandler& hCfg, Fish_Config& fishCfg);
+bool Init_UI_Variables(ConfigHandler& hCfg, UI_Config& UIConfig, Fish_Config& fCfg);
+bool Init_Player_Variables(ConfigHandler& cfgHandler, Player_Config& plCfg);
+bool Init_Fish_Variables(ConfigHandler& hCfg, Fish_Config& fishCfg);
 
 void Fixed_Update(sf::Time& tst, sf::Time tps, Player_Config& pCfg, Fish_Config& fCfg);
 
 bool isOnTarget(Player_Config& playerConfig, Fish_Config& fishConfig);
 
 void BatchRender(sf::RenderWindow& window, vector<sf::Drawable*> drawables);
+
+     const int MARKER_DROP_RATE = 5;
+     const int MARKER_RISE_RATE = -7;
+
+     int MarkerDropRate() { return MARKER_DROP_RATE; }
+     int MarkerRiseRate() { return MARKER_RISE_RATE; }
+
+     
+
+     const int FRAMES_PER_FISH_POS = 300;
+     int FRAMES_REMAINING = FRAMES_PER_FISH_POS;
+
 int main()
 {     
+     TimeMeter* meter;
 
      ConfigHandler hCfg;
      hCfg.ReadConfigFile(); 
      
      Player_Config playerConfig;
-     Configure_Player(hCfg, playerConfig);
+     Init_Player_Variables(hCfg, playerConfig);
 
      Fish_Config fishConfig;
-     Configure_Fish(hCfg, fishConfig);
+     Init_Fish_Variables(hCfg, fishConfig);
      
      UI_Config UIConfig;
-     Configure_UI(hCfg, UIConfig, fishConfig);
+     Init_UI_Variables(hCfg, UIConfig, fishConfig);
 
      sf::RenderWindow window(sf::VideoMode(stoi(UIConfig.windowWidth), stoi(UIConfig.windowHeight)), "Fishing!");
 
+     
 
      vector<sf::Drawable*> drawables;
-     drawables.push_back(&UIConfig.frameSprite);
-     drawables.push_back(&playerConfig.playerMarker);
-     drawables.push_back(&fishConfig.fish);
-     drawables.push_back(&UIConfig.meter);
+     //drawables.push_back(&UIConfig.frameSprite);
+     //drawables.push_back(&playerConfig.playerMarker);
+     //drawables.push_back(&fishConfig.fish);
 
 
      bool isLeftPressed = false;
@@ -112,7 +121,7 @@ int main()
 #pragma region MainLoop
      while (window.isOpen())
      {
-          UIConfig.meter.Update(physicsClock.getElapsedTime().asSeconds());
+//          meter->Update(physicsClock.getElapsedTime().asSeconds());
           timeSinceTick += physicsClock.restart();      
           sf::Event event;
           while (window.pollEvent(event))
@@ -128,16 +137,16 @@ int main()
 
                if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
                {
-                    if (UIConfig.meter.getGlobalBounds().contains((sf::Vector2f)sf::Mouse::getPosition(window)) && !isMeterGrabbed && !isMarkerGrabbed)
+                   /* if (meter->getGlobalBounds().contains((sf::Vector2f)sf::Mouse::getPosition(window)) && !isMeterGrabbed && !isMarkerGrabbed)
                     {
                          isMeterGrabbed = true;
-                         meterGrabOffset = (sf::Vector2f)sf::Mouse::getPosition(window) - UIConfig.meter.getPosition();
+                         meterGrabOffset = (sf::Vector2f)sf::Mouse::getPosition(window) - meter->getPosition();
                     }
                     else if (playerConfig.playerMarker.getGlobalBounds().contains((sf::Vector2f)sf::Mouse::getPosition(window)) && !isMarkerGrabbed && !isMeterGrabbed)
                     {
                          isMarkerGrabbed = true;
                          markerGrabOffset = (sf::Vector2f)sf::Mouse::getPosition(window) - playerConfig.playerMarker.getPosition();
-                    }
+                    }*/
                }
                else
                {
@@ -148,9 +157,9 @@ int main()
 
           if (isMeterGrabbed)
           {
-               UIConfig.meter.setPosition((sf::Vector2f)sf::Mouse::getPosition(window)-meterGrabOffset);
-               hCfg.AlterValue("TIMER_X", std::to_string(UIConfig.meter.getPosition().x));
-               hCfg.AlterValue("TIMER_Y", std::to_string(UIConfig.meter.getPosition().y));
+//               meter->setPosition((sf::Vector2f)sf::Mouse::getPosition(window)-meterGrabOffset);
+//               hCfg.AlterValue("TIMER_X", std::to_string(meter->getPosition().x));
+  //             hCfg.AlterValue("TIMER_Y", std::to_string(meter->getPosition().y));
           }
           else if (isMarkerGrabbed)
           {
@@ -161,12 +170,12 @@ int main()
 
           
           Fixed_Update(timeSinceTick, targetPhysicsSPF, playerConfig, fishConfig);
-
+          //cout << (int)UIConfig.meter.getFillColor().r << ", " << (int)UIConfig.meter.getFillColor().g << ", " << (int)UIConfig.meter.getFillColor().b << endl;
          
           if (isOnTarget(playerConfig, fishConfig))
           {          
                playerConfig.playerMarker.setFillColor(sf::Color(stoi(playerConfig.player_active_R), stoi(playerConfig.player_active_G), stoi(playerConfig.player_active_B), stoi(playerConfig.player_active_A)));
-               UIConfig.meter.IncreaseRemaining(0.05f);
+              // meter->IncreaseRemaining(0.05f);
           }
           else playerConfig.playerMarker.setFillColor(sf::Color(stoi(playerConfig.player_R), stoi(playerConfig.player_G), stoi(playerConfig.player_B), stoi(playerConfig.player_A)));
 
@@ -182,7 +191,7 @@ int main()
      return 0;
 }
 
-bool Configure_UI(ConfigHandler& hCfg, UI_Config& UIConfig, Fish_Config& fCfg)
+bool Init_UI_Variables(ConfigHandler& hCfg, UI_Config& UIConfig, Fish_Config& fCfg)
 {
      hCfg.FindConfig("DEFAULT_WINDOW_WIDTH", UIConfig.windowWidth);
      hCfg.FindConfig("DEFAULT_WINDOW_HEIGHT", UIConfig.windowHeight);
@@ -217,16 +226,10 @@ bool Configure_UI(ConfigHandler& hCfg, UI_Config& UIConfig, Fish_Config& fCfg)
      hCfg.FindConfig("DEFAULT_TIMER_COLOR_B", UIConfig.timer_B);
      hCfg.FindConfig("DEFAULT_TIMER_COLOR_A", UIConfig.timer_A);
 
-     
-     UIConfig.meter.setPosition(sf::Vector2f(stoi(UIConfig.timer_X), stoi(UIConfig.timer_Y))); 
-     UIConfig.meter.setSize(sf::Vector2f(stoi(UIConfig.timerWidth), stoi(UIConfig.timerMaxHeight)));
-     UIConfig.meter.setFillColor(sf::Color(stoi(UIConfig.timer_R), stoi(UIConfig.timer_G), stoi(UIConfig.timer_B), stoi(UIConfig.timer_A)));
-     UIConfig.meter.SetRemaining(60.f * fCfg.fish.difFactor(Fish::DifficultyTier::HARD));
-
      return true;
 }
 
-bool Configure_Player(ConfigHandler& hCfg, Player_Config& playerConfig)
+bool Init_Player_Variables(ConfigHandler& hCfg, Player_Config& playerConfig)
 {
      hCfg.FindConfig("PLAYER_INDICATOR_WIDTH", playerConfig.player_W);
      hCfg.FindConfig("PLAYER_INDICATOR_HEIGHT", playerConfig.player_H);
@@ -253,7 +256,7 @@ bool Configure_Player(ConfigHandler& hCfg, Player_Config& playerConfig)
      return true;
 }
 
-bool Configure_Fish(ConfigHandler& hCfg, Fish_Config& fishCfg)
+bool Init_Fish_Variables(ConfigHandler& hCfg, Fish_Config& fishCfg)
 {
      hCfg.FindConfig("FISH_ICON_PATH", fishCfg.fishIconPath);
      string fish_X, fish_Y;
@@ -301,7 +304,7 @@ void Fixed_Update(sf::Time& tst, sf::Time tps, Player_Config& pCfg, Fish_Config&
           if (FRAMES_REMAINING <= 0)
           {
                FRAMES_REMAINING = FRAMES_PER_FISH_POS;
-               fCfg.fish.setPosition(fCfg.fish.getPosition().x, Random::get(DEFAULT_FISH_Y_POS, 435.0f));
+               //fCfg.fish.setPosition(fCfg.fish.getPosition().x, Random::get(fCfg., 435.0f));
           }
 
           tst -= tps;

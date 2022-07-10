@@ -11,9 +11,9 @@ TimeMeter::TimeMeter(sf::Vector2f pos, sf::Vector2f dim) : sf::RectangleShape{ d
      this->setPosition(pos);
 }
 
-TimeMeter::TimeMeter(sf::Vector2f pos, sf::Vector2f dim, float dur) : sf::RectangleShape{dim}, m_meterMaxDim{dim}, m_meterMaxPos{ pos }
+TimeMeter::TimeMeter(sf::Vector2f pos, sf::Vector2f dim, float dur, sf::Color fillColor) : sf::RectangleShape{dim}, m_meterMaxDim{dim}, m_meterMaxPos{ pos }
 {
-     this->setFillColor(sf::Color(255,255,255,255));
+     this->setFillColor(fillColor);
      this->setPosition(pos);
      
      m_secDuration = dur;
