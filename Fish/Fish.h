@@ -3,8 +3,12 @@
 class Fish : public sf::Sprite
 {
 public:
-     enum class DifficultyTier {EASY, MEDIUM, HARD};
+     enum DifficultyTier {EASY, MEDIUM, HARD};
 
+     void setDifficulty(DifficultyTier tier)
+     {
+          m_diffTier = tier;
+     }
      float difFactor(DifficultyTier level)
      {
           

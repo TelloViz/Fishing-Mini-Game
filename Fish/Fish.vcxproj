@@ -156,7 +156,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
-    <ClInclude Include="Config.hpp" />
     <ClInclude Include="ConfigHandler.h" />
     <ClInclude Include="Fish.h" />
     <ClInclude Include="Indicator.h" />

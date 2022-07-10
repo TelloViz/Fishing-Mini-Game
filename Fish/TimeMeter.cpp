@@ -13,8 +13,7 @@ TimeMeter::TimeMeter(sf::Vector2f pos, sf::Vector2f dim) : sf::RectangleShape{ d
 
 TimeMeter::TimeMeter(sf::Vector2f pos, sf::Vector2f dim, float dur) : sf::RectangleShape{dim}, m_meterMaxDim{dim}, m_meterMaxPos{ pos }
 {
-     this->setFillColor(sf::Color(255,255,255,255));
-     this->setPosition(pos);
+     //this->setPosition(pos);
      
      m_secDuration = dur;
 }
@@ -24,8 +23,8 @@ void TimeMeter::Update(float secElapsed) // seconds elapsed since last call to t
      if (!m_isPaused)
      {
           m_secElapsed += secElapsed; // keep our running total synced up     
-          auto newHeight = m_meterMaxDim.y * ElapsedRatio(m_secElapsed, m_secDuration);;
-          this->setSize(sf::Vector2f(this->getSize().x, newHeight));
+//          auto newHeight = m_meterMaxDim.y * ElapsedRatio(m_secElapsed, m_secDuration);;
+  //        this->setSize(sf::Vector2f(this->getSize().x, newHeight));
      }
 }
 
