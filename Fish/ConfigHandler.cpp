@@ -39,8 +39,7 @@ bool ConfigHandler::WriteConfigFile()
           cout << "failed to open " << filename << '\n';
      }
      else {
-         // TODO Writing logic here
-          
+                 
           for (auto const& x : keys)
           {
                file_out << x  // string (key)
@@ -50,8 +49,7 @@ bool ConfigHandler::WriteConfigFile()
           }
           
           file_out.close();
-          // file_out << "Some random text to write." << endl;
-          //cout << "Done Writing!" << endl;
+          cout << "Done Writing!" << endl;
      }
 
      return EXIT_SUCCESS;

@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
+    <ClCompile Include="Application.cpp" />
     <ClCompile Include="ConfigHandler.cpp" />
     <ClCompile Include="Fish.cpp" />
     <ClCompile Include="Indicator.cpp" />
@@ -156,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
+    <ClInclude Include="Application.h" />
     <ClInclude Include="ConfigHandler.h" />
     <ClInclude Include="Fish.h" />
     <ClInclude Include="Indicator.h" />

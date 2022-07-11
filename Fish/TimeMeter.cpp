@@ -11,20 +11,23 @@ TimeMeter::TimeMeter(sf::Vector2f pos, sf::Vector2f dim) : sf::RectangleShape{ d
      this->setPosition(pos);
 }
 
-TimeMeter::TimeMeter(sf::Vector2f pos, sf::Vector2f dim, float dur) : sf::RectangleShape{dim}, m_meterMaxDim{dim}, m_meterMaxPos{ pos }
+TimeMeter::TimeMeter(sf::Vector2f pos, sf::Vector2f dim, sf::Time dur) : sf::RectangleShape(dim), m_meterMaxDim(dim), m_meterMaxPos( pos )
 {
      //this->setPosition(pos);
      
-     m_secDuration = dur;
+     m_msDuration = dur;
 }
 
-void TimeMeter::Update(float secElapsed) // seconds elapsed since last call to this function
+void TimeMeter::Update(sf::Time elapsed) // seconds elapsed since last call to this function
 {
+     m_msElapsed += elapsed;
      if (!m_isPaused)
      {
-          m_secElapsed += secElapsed; // keep our running total synced up     
-//          auto newHeight = m_meterMaxDim.y * ElapsedRatio(m_secElapsed, m_secDuration);;
-  //        this->setSize(sf::Vector2f(this->getSize().x, newHeight));
+          //m_elap
+         float elapsedRate = m_msElapsed.asSeconds() / m_msDuration.asSeconds();
+         cout << "Elapsed(sec)=" << m_msElapsed.asSeconds() << "/ Duration(sec)=" << m_msDuration.asSeconds() << " Ratio(%)=" << elapsedRate << endl;
+         this->setSize(sf::Vector2f(this->getSize().x, m_meterMaxDim.y * elapsedRate));
+
      }
 }
 
@@ -35,7 +38,7 @@ void TimeMeter::Reset()
 void TimeMeter::Restart()
 {
      
-     m_secElapsed = 0.0f;
+     //m_msElapsed = 0.0f;
      
 }
 

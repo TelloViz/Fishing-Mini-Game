@@ -1,8 +1,10 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <iostream>
 class Fish : public sf::Sprite
 {
 public:
+
      enum DifficultyTier {EASY, MEDIUM, HARD};
 
      void setDifficulty(DifficultyTier tier)
@@ -33,4 +35,6 @@ private:
 
      
 };
+
+
 
