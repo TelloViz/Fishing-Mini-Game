@@ -23,7 +23,6 @@ namespace tv
           meter.setFillColor(sf::Color(stoi(UIConfig.timer_R), stoi(UIConfig.timer_G), stoi(UIConfig.timer_B), stoi(UIConfig.timer_A)));
           meter.setSize(sf::Vector2f(stoi(UIConfig.timerWidth), stoi(UIConfig.timerMaxHeight)));
           meter.setPosition(sf::Vector2f(stoi(UIConfig.timer_X), stoi(UIConfig.timer_Y)));
-          //meter.SetRemaining(sf::Time(sf::seconds(60)));
 
           sf::RenderWindow window(sf::VideoMode(stoi(UIConfig.windowWidth), stoi(UIConfig.windowHeight)), "Fishing!");
 
