@@ -32,6 +32,8 @@ namespace tv
           sf::RenderWindow window(sf::VideoMode(stoi(UIConfig.windowWidth), stoi(UIConfig.windowHeight)), "Fishing!");
           ImGui::SFML::Init(window);
 
+          bool isDevMode = false;
+
           vector<sf::Drawable*> drawables;
           drawables.push_back(&UIConfig.frameSprite);
           drawables.push_back(&playerConfig.playerMarker);
@@ -47,29 +49,34 @@ namespace tv
 #pragma region MainLoop
           while (window.isOpen())
           {
-               meter.Update(physicsClock.getElapsedTime());
-               timeSinceTick += physicsClock.restart();
+               
                sf::Event event;
                while (window.pollEvent(event))
                {
                     ImGui::SFML::ProcessEvent(window, event);
                     if (event.type == sf::Event::Closed)
                          window.close();
+                    if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Key::LAlt)
+                    {
+                         isDevMode = !isDevMode;
+                    }
 
                }
 
                ImGui::SFML::Update(window, imguiClock.restart());
+               meter.Update(physicsClock.getElapsedTime());
+               timeSinceTick += physicsClock.restart();
                Fixed_Update(timeSinceTick, targetPhysicsSPF, playerConfig, fishConfig);
                
                //cout << "x:" << meter.getPosition().x << ", " << "y:" << meter.getPosition().y << "\tw: " << meter.getSize().x << ", " << "h:" << meter.getSize().y << endl;
                
                
                //RenderCurrentState(window, drawables);
-
-               ImGui::Begin("Hello, world!");
-               ImGui::Button("Look at this pretty button");               
-               ImGui::End();
-
+               if (isDevMode) {
+                    ImGui::Begin("Hello, world!");
+                    ImGui::Button("Look at this pretty button");
+                    ImGui::End();
+               }
                window.clear();
                for (auto i : drawables)
                {
