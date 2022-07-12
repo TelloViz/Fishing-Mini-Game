@@ -25,7 +25,7 @@ void TimeMeter::Update(sf::Time elapsed) // seconds elapsed since last call to t
      {
           //m_elap
          float elapsedRate = m_msElapsed.asSeconds() / m_msDuration.asSeconds();
-         cout << "Elapsed(sec)=" << m_msElapsed.asSeconds() << "/ Duration(sec)=" << m_msDuration.asSeconds() << " Ratio(%)=" << elapsedRate << endl;
+         //cout << "Elapsed(sec)=" << m_msElapsed.asSeconds() << "/ Duration(sec)=" << m_msDuration.asSeconds() << " Ratio(%)=" << elapsedRate << endl;
          this->setSize(sf::Vector2f(this->getSize().x, m_meterMaxDim.y * elapsedRate));
 
      }
