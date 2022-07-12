@@ -1,12 +1,17 @@
 #include "Application.h"
+#include <imgui/imgui.h>
+#include <imgui-SFML.h>
+
+
 
 namespace tv
 {
-     using namespace std;
+     
      using Random = effolkronium::random_static;
 
      int Application::Run()
      {
+          
           ConfigHandler hCfg;
           hCfg.ReadConfigFile();
 
@@ -25,6 +30,7 @@ namespace tv
           meter.setPosition(sf::Vector2f(stoi(UIConfig.timer_X), stoi(UIConfig.timer_Y)));
 
           sf::RenderWindow window(sf::VideoMode(stoi(UIConfig.windowWidth), stoi(UIConfig.windowHeight)), "Fishing!");
+          ImGui::SFML::Init(window);
 
           vector<sf::Drawable*> drawables;
           drawables.push_back(&UIConfig.frameSprite);
@@ -35,6 +41,7 @@ namespace tv
           sf::Time targetPhysicsSPF = sf::seconds(1 / targetPhysicsFPS);
           sf::Time timeSinceTick;
           sf::Clock physicsClock;
+          sf::Clock imguiClock;
           physicsClock.restart();
 
 #pragma region MainLoop
@@ -45,22 +52,36 @@ namespace tv
                sf::Event event;
                while (window.pollEvent(event))
                {
+                    ImGui::SFML::ProcessEvent(window, event);
                     if (event.type == sf::Event::Closed)
                          window.close();
 
                }
 
-
+               ImGui::SFML::Update(window, imguiClock.restart());
                Fixed_Update(timeSinceTick, targetPhysicsSPF, playerConfig, fishConfig);
                
                //cout << "x:" << meter.getPosition().x << ", " << "y:" << meter.getPosition().y << "\tw: " << meter.getSize().x << ", " << "h:" << meter.getSize().y << endl;
                
                
-               RenderCurrentState(window, drawables);
+               //RenderCurrentState(window, drawables);
+
+               ImGui::Begin("Hello, world!");
+               ImGui::Button("Look at this pretty button");               
+               ImGui::End();
+
+               window.clear();
+               for (auto i : drawables)
+               {
+                    window.draw(*i);
+               }
+               ImGui::SFML::Render(window);
+               window.display();
           }
 #pragma endregion // Main loop
 
           hCfg.WriteConfigFile();
+          ImGui::SFML::Shutdown();
           return 0;
      }
 
