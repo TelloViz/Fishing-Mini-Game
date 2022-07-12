@@ -295,6 +295,7 @@
     <None Include="deps\SFML-2.5.1\include\SFML\System\Utf.inl" />
     <None Include="deps\SFML-2.5.1\include\SFML\System\Vector2.inl" />
     <None Include="deps\SFML-2.5.1\include\SFML\System\Vector3.inl" />
+    <None Include="imgui.ini" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\fishFrame.png" />

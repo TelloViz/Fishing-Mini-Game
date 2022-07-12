@@ -444,6 +444,9 @@
     <None Include="deps\SFML-2.5.1\include\SFML\System\Vector3.inl">
       <Filter>Header Files\SFML</Filter>
     </None>
+    <None Include="imgui.ini">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\fishFrame.png">

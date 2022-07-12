@@ -33,6 +33,9 @@ namespace tv
           ImGui::SFML::Init(window);
 
           bool isDevMode = false;
+          int devPosTest;
+          int rSlider{ 0 }, oldR{0};
+
 
           vector<sf::Drawable*> drawables;
           drawables.push_back(&UIConfig.frameSprite);
@@ -75,7 +78,16 @@ namespace tv
                if (isDevMode) {
                     ImGui::Begin("Hello, world!");
                     ImGui::Button("Look at this pretty button");
+                    ImGui::SliderInt("R=", &rSlider, 0, 255);
+                    if (rSlider != oldR)
+                    {
+                         hCfg.AlterValue("DEFAULT_PLAYER_INDICATOR_COLOR_R", std::to_string(rSlider));
+                         playerConfig.playerMarker.setFillColor(sf::Color(rSlider, playerConfig.playerMarker.getFillColor().b, playerConfig.playerMarker.getFillColor().g, playerConfig.playerMarker.getFillColor().a));
+                         oldR = rSlider;
+                    }
                     ImGui::End();
+
+
                }
                window.clear();
                for (auto i : drawables)
@@ -136,14 +148,14 @@ namespace tv
           hCfg.FindConfig("PLAYER_INDICATOR_HEIGHT", playerConfig.player_H);
           hCfg.FindConfig("PLAYER_X_POS", playerConfig.player_X);
           hCfg.FindConfig("PLAYER_Y_POS", playerConfig.player_Y);
-          hCfg.FindConfig("DEFUALT_PLAYER_INDICATOR_COLOR_R", playerConfig.player_R);
-          hCfg.FindConfig("DEFUALT_PLAYER_INDICATOR_COLOR_G", playerConfig.player_G);
-          hCfg.FindConfig("DEFUALT_PLAYER_INDICATOR_COLOR_B", playerConfig.player_B);
-          hCfg.FindConfig("DEFUALT_PLAYER_INDICATOR_COLOR_A", playerConfig.player_A);
-          hCfg.FindConfig("DEFUALT_PLAYER_INDICATOR_COLOR_R", playerConfig.player_active_R);
-          hCfg.FindConfig("DEFUALT_PLAYER_INDICATOR_COLOR_G", playerConfig.player_active_G);
-          hCfg.FindConfig("DEFUALT_PLAYER_INDICATOR_COLOR_B", playerConfig.player_active_B);
-          hCfg.FindConfig("DEFUALT_PLAYER_INDICATOR_COLOR_A", playerConfig.player_active_A);
+          hCfg.FindConfig("DEFAULT_PLAYER_INDICATOR_COLOR_R", playerConfig.player_R);
+          hCfg.FindConfig("DEFAULT_PLAYER_INDICATOR_COLOR_G", playerConfig.player_G);
+          hCfg.FindConfig("DEFAULT_PLAYER_INDICATOR_COLOR_B", playerConfig.player_B);
+          hCfg.FindConfig("DEFAULT_PLAYER_INDICATOR_COLOR_A", playerConfig.player_A);
+          hCfg.FindConfig("POSITIVE_INDICATOR_COLOR_R", playerConfig.player_active_R);
+          hCfg.FindConfig("POSITIVE_INDICATOR_COLOR_G", playerConfig.player_active_G);
+          hCfg.FindConfig("POSITIVE_INDICATOR_COLOR_B", playerConfig.player_active_B);
+          hCfg.FindConfig("POSITIVE_INDICATOR_COLOR_A", playerConfig.player_active_A);
 
           playerConfig.playerMarker.setSize(sf::Vector2f(stoi(playerConfig.player_W), stoi(playerConfig.player_H)));
           playerConfig.playerMarker.setPosition(stoi(playerConfig.player_X), stoi(playerConfig.player_Y));
