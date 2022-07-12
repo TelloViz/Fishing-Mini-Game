@@ -88,14 +88,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SFML_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\code_GameDevelopmentProjects\Fish\Fish\SFML-2.5.1\include;C:\code_GameDevelopmentProjects\Fish\Fish\imgui-sfml-2.5;C:\code_GameDevelopmentProjects\Fish\Fish\imgui-1.88;C:\code_GameDevelopmentProjects\Fish\Fish\glut37\glut-3.7\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\code_GameDevelopmentProjects\Fish\Fish\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\code_GameDevelopmentProjects\Fish\Fish\SFML-2.5.1\lib;C:\code_GameDevelopmentProjects\Fish\Fish\imgui-1.88;C:\code_GameDevelopmentProjects\Fish\Fish\imgui-sfml-2.5\Build;C:\code_GameDevelopmentProjects\Fish\Fish\glut37\glut-3.7\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\code_GameDevelopmentProjects\Fish\Fish\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics-s-d.lib;sfml-window-s-d.lib;sfml-audio-s-d.lib;sfml-network-s-d.lib;sfml-system-s-d.lib;freetype.lib;winmm.lib;ogg.lib;opengl32.lib;openal32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -147,11 +147,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\imgui-1.88\imgui.cpp" />
-    <ClCompile Include="..\imgui-1.88\imgui_demo.cpp" />
-    <ClCompile Include="..\imgui-1.88\imgui_draw.cpp" />
-    <ClCompile Include="..\imgui-1.88\imgui_tables.cpp" />
-    <ClCompile Include="..\imgui-1.88\imgui_widgets.cpp" />
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="ConfigHandler.cpp" />
@@ -161,12 +156,6 @@
     <ClCompile Include="TimeMeter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\imgui-1.88\imconfig.h" />
-    <ClInclude Include="..\imgui-1.88\imgui.h" />
-    <ClInclude Include="..\imgui-1.88\imgui_internal.h" />
-    <ClInclude Include="..\imgui-1.88\imstb_rectpack.h" />
-    <ClInclude Include="..\imgui-1.88\imstb_textedit.h" />
-    <ClInclude Include="..\imgui-1.88\imstb_truetype.h" />
     <ClInclude Include="Actor.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="ConfigHandler.h" />
