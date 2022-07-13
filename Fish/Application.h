@@ -1,5 +1,5 @@
 #pragma once
-#include <SFML/Graphics.hpp>
+#include "deps/SFML-2.5.1/include/SFML/Graphics.hpp"
 #include <iostream>
 #include "random.hpp"
 #include "TimeMeter.h"
