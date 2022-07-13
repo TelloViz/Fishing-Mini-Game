@@ -3,12 +3,13 @@
 #include <imgui-SFML.h>
 
 
-
+namespace ImGui { extern ImGuiKeyData* GetKeyData(ImGuiKey key); }
 namespace tv
 {
      
      using Random = effolkronium::random_static;
-
+     bool isCursorBlocked = false;
+     bool isTestingHover = true;
      int Application::Run()
      {
           
@@ -32,10 +33,9 @@ namespace tv
           sf::RenderWindow window(sf::VideoMode(stoi(UIConfig.windowWidth), stoi(UIConfig.windowHeight)), "Fishing!");
           ImGui::SFML::Init(window);
 
-          bool isDevMode = false;
+          
           int devPosTest;
-          int rSlider{ 0 }, oldR{0};
-
+          int rSlider{ 0 };
 
           vector<sf::Drawable*> drawables;
           drawables.push_back(&UIConfig.frameSprite);
@@ -54,41 +54,27 @@ namespace tv
           {
                
                sf::Event event;
+               sf::Event imguiEvent;
                while (window.pollEvent(event))
                {
+                    
                     ImGui::SFML::ProcessEvent(window, event);
                     if (event.type == sf::Event::Closed)
-                         window.close();
-                    if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Key::LAlt)
                     {
-                         isDevMode = !isDevMode;
+                         window.close();
                     }
 
+
+                    
                }
+               
 
                ImGui::SFML::Update(window, imguiClock.restart());
+               //RunImguiLogic(window);
                meter.Update(physicsClock.getElapsedTime());
                timeSinceTick += physicsClock.restart();
                Fixed_Update(timeSinceTick, targetPhysicsSPF, playerConfig, fishConfig);
                
-               //cout << "x:" << meter.getPosition().x << ", " << "y:" << meter.getPosition().y << "\tw: " << meter.getSize().x << ", " << "h:" << meter.getSize().y << endl;
-               
-               
-               //RenderCurrentState(window, drawables);
-               if (isDevMode) {
-                    ImGui::Begin("Hello, world!");
-                    ImGui::Button("Look at this pretty button");
-                    ImGui::SliderInt("R=", &rSlider, 0, 255);
-                    if (rSlider != oldR)
-                    {
-                         hCfg.AlterValue("DEFAULT_PLAYER_INDICATOR_COLOR_R", std::to_string(rSlider));
-                         playerConfig.playerMarker.setFillColor(sf::Color(rSlider, playerConfig.playerMarker.getFillColor().b, playerConfig.playerMarker.getFillColor().g, playerConfig.playerMarker.getFillColor().a));
-                         oldR = rSlider;
-                    }
-                    ImGui::End();
-
-
-               }
                window.clear();
                for (auto i : drawables)
                {
@@ -102,6 +88,165 @@ namespace tv
           hCfg.WriteConfigFile();
           ImGui::SFML::Shutdown();
           return 0;
+     }
+
+     
+
+
+     bool isOpen = false;
+     bool isAlsoOpen = false;
+     void Application::RunImguiLogic(sf::RenderWindow& window) const
+     {
+
+          ImGuiIO& io = ImGui::GetIO();
+          ImGui::Begin("TestingHoverFocus", &isTestingHover);
+               if (ImGui::IsWindowHovered())
+               {
+                    io.WantCaptureMouse = true;
+               }
+               else io.WantCaptureMouse = false;
+               ImGui::End();
+          
+          ImGui::Begin("FocusTests");
+          if (ImGui::TreeNode("Querying Window Status (Focused/Hovered etc.)"))
+          {
+               static bool embed_all_inside_a_child_window = false;
+               ImGui::Checkbox("Embed everything inside a child window for testing _RootWindow flag.", &embed_all_inside_a_child_window);
+               if (embed_all_inside_a_child_window)
+                    ImGui::BeginChild("outer_child", ImVec2(0, ImGui::GetFontSize() * 20.0f), true);
+
+               // Testing IsWindowFocused() function with its various flags.
+               ImGui::BulletText(
+                    "IsWindowFocused() = %d\n"
+                    "IsWindowFocused(_ChildWindows) = %d\n"
+                    "IsWindowFocused(_ChildWindows|_NoPopupHierarchy) = %d\n"
+                    "IsWindowFocused(_ChildWindows|_DockHierarchy) = %d\n"
+                    "IsWindowFocused(_ChildWindows|_RootWindow) = %d\n"
+                    "IsWindowFocused(_ChildWindows|_RootWindow|_NoPopupHierarchy) = %d\n"
+                    "IsWindowFocused(_ChildWindows|_RootWindow|_DockHierarchy) = %d\n"
+                    "IsWindowFocused(_RootWindow) = %d\n"
+                    "IsWindowFocused(_RootWindow|_NoPopupHierarchy) = %d\n"
+                    "IsWindowFocused(_RootWindow|_DockHierarchy) = %d\n"
+                    "IsWindowFocused(_AnyWindow) = %d\n",
+                    ImGui::IsWindowFocused(),
+                    ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows),
+                    ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows | ImGuiFocusedFlags_NoPopupHierarchy),
+                    //ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows | ImGuiFocusedFlags_DockHierarchy),
+                    ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows | ImGuiFocusedFlags_RootWindow),
+                    ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows | ImGuiFocusedFlags_RootWindow | ImGuiFocusedFlags_NoPopupHierarchy),
+                    //ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows | ImGuiFocusedFlags_RootWindow | ImGuiFocusedFlags_DockHierarchy),
+                    ImGui::IsWindowFocused(ImGuiFocusedFlags_RootWindow),
+                    ImGui::IsWindowFocused(ImGuiFocusedFlags_RootWindow | ImGuiFocusedFlags_NoPopupHierarchy),
+                    //ImGui::IsWindowFocused(ImGuiFocusedFlags_RootWindow | ImGuiFocusedFlags_DockHierarchy),
+                    ImGui::IsWindowFocused(ImGuiFocusedFlags_AnyWindow));
+
+               // Testing IsWindowHovered() function with its various flags.
+               ImGui::BulletText(
+                    "IsWindowHovered() = %d\n"
+                    "IsWindowHovered(_AllowWhenBlockedByPopup) = %d\n"
+                    "IsWindowHovered(_AllowWhenBlockedByActiveItem) = %d\n"
+                    "IsWindowHovered(_ChildWindows) = %d\n"
+                    "IsWindowHovered(_ChildWindows|_NoPopupHierarchy) = %d\n"
+                    "IsWindowHovered(_ChildWindows|_DockHierarchy) = %d\n"
+                    "IsWindowHovered(_ChildWindows|_RootWindow) = %d\n"
+                    "IsWindowHovered(_ChildWindows|_RootWindow|_NoPopupHierarchy) = %d\n"
+                    "IsWindowHovered(_ChildWindows|_RootWindow|_DockHierarchy) = %d\n"
+                    "IsWindowHovered(_RootWindow) = %d\n"
+                    "IsWindowHovered(_RootWindow|_NoPopupHierarchy) = %d\n"
+                    "IsWindowHovered(_RootWindow|_DockHierarchy) = %d\n"
+                    "IsWindowHovered(_ChildWindows|_AllowWhenBlockedByPopup) = %d\n"
+                    "IsWindowHovered(_AnyWindow) = %d\n",
+                    ImGui::IsWindowHovered(),
+                    ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup),
+                    ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem),
+                    ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows),
+                    ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy),
+                    ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_RootWindow),
+                    ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_RootWindow | ImGuiHoveredFlags_NoPopupHierarchy),
+                    ImGui::IsWindowHovered(ImGuiHoveredFlags_RootWindow),
+                    ImGui::IsWindowHovered(ImGuiHoveredFlags_RootWindow | ImGuiHoveredFlags_NoPopupHierarchy),
+                    ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_AllowWhenBlockedByPopup),
+                    ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow));
+
+               ImGui::BeginChild("child", ImVec2(0, 50), true);
+               ImGui::Text("This is another child window for testing the _ChildWindows flag.");
+               ImGui::EndChild();
+               if (embed_all_inside_a_child_window)
+                    ImGui::EndChild();              
+
+               ImGui::TreePop();
+          }
+          ImGui::End();
+          
+          
+     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+     void Application::Fixed_Update(sf::Time& tst, sf::Time tps, Player_State& pCfg, Fish_State& fCfg)
+     {
+         
+          while (tst >= tps)
+          {
+               
+                    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+                    {
+                         pCfg.playerMarker.move(sf::Vector2f(0, MarkerRiseRate()));
+                         if (pCfg.playerMarker.getPosition().y <= stoi(pCfg.markerBottomLimit))
+                         {
+                              pCfg.playerMarker.setPosition(pCfg.playerMarker.getPosition().x, stoi(pCfg.markerBottomLimit));
+
+                         }
+                    }
+                    else
+                    {
+                         pCfg.playerMarker.move(sf::Vector2f(0, MarkerDropRate()));
+                         if (pCfg.playerMarker.getPosition().y + pCfg.playerMarker.getSize().y > stoi(pCfg.markerTopLimit))
+                         {
+                              pCfg.playerMarker.setPosition(pCfg.playerMarker.getPosition().x, stoi(pCfg.markerTopLimit) - pCfg.playerMarker.getSize().y);
+
+                         }
+                    }
+               
+               
+
+               tst -= tps;
+          }
+     }
+
+     bool Application::isOnTarget(Player_State& playerConfig, Fish_State& fishConfig)
+     {
+          float mTop = playerConfig.playerMarker.getPosition().y;
+          float mBot = playerConfig.playerMarker.getPosition().y + playerConfig.playerMarker.getSize().y;
+          float fTop = fishConfig.fish.getPosition().y;
+          float fBot = fishConfig.fish.getPosition().y + fishConfig.fish.getTexture()->getSize().y; // TODO this will fail as soon as the texture isn't just so
+
+          if ((mTop >= fTop && mTop <= fBot) || (mBot >= fTop && mBot <= fBot) || (mTop < fTop && mBot > fBot))
+          {
+               return true;
+          }
+          return false;
+     }
+
+     void Application::RenderCurrentState(sf::RenderWindow& window, vector<sf::Drawable*> drawables)
+     {
+          window.clear();
+          for (auto i : drawables)
+          {
+               window.draw(*i);
+          }
+
+          window.display();
      }
 
      bool Application::Init_UI_Variables(ConfigHandler& hCfg, UI_State& UIConfig, Fish_State& fCfg)
@@ -141,7 +286,6 @@ namespace tv
 
           return true;
      }
-
      bool Application::Init_Player_Variables(ConfigHandler& hCfg, Player_State& playerConfig)
      {
           hCfg.FindConfig("PLAYER_INDICATOR_WIDTH", playerConfig.player_W);
@@ -168,7 +312,6 @@ namespace tv
 
           return true;
      }
-
      bool Application::Init_Fish_Variables(ConfigHandler& hCfg, Fish_State& fishCfg)
      {
           hCfg.FindConfig("FISH_ICON_PATH", fishCfg.fishIconPath);
@@ -209,63 +352,5 @@ namespace tv
           return true;
      }
 
-     void Application::Fixed_Update(sf::Time& tst, sf::Time tps, Player_State& pCfg, Fish_State& fCfg)
-     {
-          while (tst >= tps)
-          {
-               --FRAMES_REMAINING;
 
-               if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
-               {
-                    pCfg.playerMarker.move(sf::Vector2f(0, MarkerRiseRate()));
-                    if (pCfg.playerMarker.getPosition().y <= stoi(pCfg.markerBottomLimit))
-                    {
-                         pCfg.playerMarker.setPosition(pCfg.playerMarker.getPosition().x, stoi(pCfg.markerBottomLimit));
-
-                    }
-               }
-               else
-               {
-                    pCfg.playerMarker.move(sf::Vector2f(0, MarkerDropRate()));
-                    if (pCfg.playerMarker.getPosition().y + pCfg.playerMarker.getSize().y > stoi(pCfg.markerTopLimit))
-                    {
-                         pCfg.playerMarker.setPosition(pCfg.playerMarker.getPosition().x, stoi(pCfg.markerTopLimit) - pCfg.playerMarker.getSize().y);
-
-                    }
-               }
-
-               if (FRAMES_REMAINING <= 0)
-               {
-                    FRAMES_REMAINING = FRAMES_PER_FISH_POS;
-                    //fCfg.fish.setPosition(fCfg.fish.getPosition().x, Random::get(fCfg., 435.0f));
-               }
-
-               tst -= tps;
-          }
-     }
-
-     bool Application::isOnTarget(Player_State& playerConfig, Fish_State& fishConfig)
-     {
-          float mTop = playerConfig.playerMarker.getPosition().y;
-          float mBot = playerConfig.playerMarker.getPosition().y + playerConfig.playerMarker.getSize().y;
-          float fTop = fishConfig.fish.getPosition().y;
-          float fBot = fishConfig.fish.getPosition().y + fishConfig.fish.getTexture()->getSize().y; // TODO this will fail as soon as the texture isn't just so
-
-          if ((mTop >= fTop && mTop <= fBot) || (mBot >= fTop && mBot <= fBot) || (mTop < fTop && mBot > fBot))
-          {
-               return true;
-          }
-          return false;
-     }
-
-     void Application::RenderCurrentState(sf::RenderWindow& window, vector<sf::Drawable*> drawables)
-     {
-          window.clear();
-          for (auto i : drawables)
-          {
-               window.draw(*i);
-          }
-
-          window.display();
-     }
 }

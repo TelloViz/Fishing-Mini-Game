@@ -61,6 +61,7 @@ namespace tv
      {
      public:
           int Run();
+          void RunImguiLogic(sf::RenderWindow& window) const;
           bool Init_UI_Variables(ConfigHandler& hCfg, UI_State& UIConfig, Fish_State& fCfg);
           bool Init_Player_Variables(ConfigHandler& cfgHandler, Player_State& plCfg);
           bool Init_Fish_Variables(ConfigHandler& hCfg, Fish_State& fishCfg);
