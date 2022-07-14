@@ -78,6 +78,11 @@ namespace tv
           void FixedUpdate() {}
           void Render() {}
 
+          sf::RenderWindow window;
+          float targetPhysicsFPS = 60;
+          sf::Time targetPhysicsSPF;
+          sf::Time timeSinceTick;
+
 
      };
 

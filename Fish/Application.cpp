@@ -7,6 +7,7 @@ namespace tv
 
      int Application::Run()
      {
+          #pragma region Config_File_Handling
           ConfigHandler hCfg;
           hCfg.ReadConfigFile();
 
@@ -18,26 +19,30 @@ namespace tv
 
           UI_State UIConfig;
           Init_UI_Variables(hCfg, UIConfig, fishConfig);
+          #pragma endregion Config_File_Handling
 
+          #pragma region Config_TimeMeter
           TimeMeter meter(sf::Vector2f(stoi(UIConfig.timer_X), stoi(UIConfig.timer_Y)), sf::Vector2f(stoi(UIConfig.timerWidth), stoi(UIConfig.timerMaxHeight)), sf::Time(sf::seconds(20)));
           meter.setFillColor(sf::Color(stoi(UIConfig.timer_R), stoi(UIConfig.timer_G), stoi(UIConfig.timer_B), stoi(UIConfig.timer_A)));
           meter.setSize(sf::Vector2f(stoi(UIConfig.timerWidth), stoi(UIConfig.timerMaxHeight)));
           meter.setPosition(sf::Vector2f(stoi(UIConfig.timer_X), stoi(UIConfig.timer_Y)));
+          #pragma endregion Config_TimeMeter
 
-          sf::RenderWindow window(sf::VideoMode(stoi(UIConfig.windowWidth), stoi(UIConfig.windowHeight)), "Fishing!");
-
+          #pragma region Window_and_Drawables
+          window.create(sf::VideoMode(stoi(UIConfig.windowWidth), stoi(UIConfig.windowHeight)), "Fishing!");
           vector<sf::Drawable*> drawables;
           drawables.push_back(&UIConfig.frameSprite);
           drawables.push_back(&playerConfig.playerMarker);
           drawables.push_back(&meter);
+          #pragma endregion Window_and_Drawables
 
-          float targetPhysicsFPS = 60;
-          sf::Time targetPhysicsSPF = sf::seconds(1 / targetPhysicsFPS);
-          sf::Time timeSinceTick;
+          #pragma region Physics_Config
+          targetPhysicsSPF = sf::seconds(1 / targetPhysicsFPS);
           sf::Clock physicsClock;
           physicsClock.restart();
+          #pragma endregion Physics_Config
 
-#pragma region MainLoop
+          #pragma region MainLoop
           while (window.isOpen())
           {
                meter.Update(physicsClock.getElapsedTime());
@@ -49,18 +54,15 @@ namespace tv
                          window.close();
 
                }
-
-
-               Fixed_Update(timeSinceTick, targetPhysicsSPF, playerConfig, fishConfig);
-               
-               //cout << "x:" << meter.getPosition().x << ", " << "y:" << meter.getPosition().y << "\tw: " << meter.getSize().x << ", " << "h:" << meter.getSize().y << endl;
-               
-               
+               //Fixed_Update(timeSinceTick, targetPhysicsSPF, playerConfig, fishConfig);
                RenderCurrentState(window, drawables);
           }
-#pragma endregion // Main loop
+          #pragma endregion // Main loop
 
+          #pragma region Shutdown_Routines
           hCfg.WriteConfigFile();
+          #pragma endregion Shutdown_Routines
+
           return 0;
      }
 
