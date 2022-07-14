@@ -68,18 +68,19 @@ namespace tv
 
      bool Application::Init_UI_Variables(ConfigHandler& hCfg, UI_State& UIConfig, Fish_State& fCfg)
      {
-          hCfg.FindConfig("DEFAULT_WINDOW_WIDTH", UIConfig.windowWidth);
-          hCfg.FindConfig("DEFAULT_WINDOW_HEIGHT", UIConfig.windowHeight);
-          hCfg.FindConfig("BG_IMAGE_PATH", UIConfig.frame);
+          
+          hCfg.FindConfig(DEFAULT_WINDOW_WIDTH, UIConfig.windowWidth);
+          hCfg.FindConfig(DEFAULT_WINDOW_HEIGHT, UIConfig.windowHeight);
+          hCfg.FindConfig(BG_IMAGE_PATH, UIConfig.frame);
           if (!UIConfig.frameTexture.loadFromFile(UIConfig.frame))
           {
                // error ...
           }
 
-          hCfg.FindConfig("DEFAULT_CANVAS_WIDTH", UIConfig.canvasWidth);
-          hCfg.FindConfig("DEFAULT_CANVAS_HEIGHT", UIConfig.canvasHeight);
-          hCfg.FindConfig("CANVAS_X_POS", UIConfig.canvas_X);
-          hCfg.FindConfig("CANVAS_Y_POS", UIConfig.canvas_Y);
+          hCfg.FindConfig(DEFAULT_CANVAS_WIDTH, UIConfig.canvasWidth);
+          hCfg.FindConfig(DEFAULT_CANVAS_HEIGHT, UIConfig.canvasHeight);
+          hCfg.FindConfig(CANVAS_X_POS, UIConfig.canvas_X);
+          hCfg.FindConfig(CANVAS_Y_POS, UIConfig.canvas_Y);
 
 
           UIConfig.canvasShape.setSize(sf::Vector2f(stoi(UIConfig.canvasWidth), stoi(UIConfig.canvasHeight)));
@@ -91,15 +92,15 @@ namespace tv
           UIConfig.frameSprite.setTexture(UIConfig.frameTexture);
           UIConfig.frameSprite.setPosition(stoi(UIConfig.canvas_X), stoi(UIConfig.canvas_Y));
 
-          hCfg.FindConfig("TIMER_X", UIConfig.timer_X);
-          hCfg.FindConfig("TIMER_Y", UIConfig.timer_Y);
-          hCfg.FindConfig("DEFAULT_TIMER_WIDTH", UIConfig.timerWidth);
-          hCfg.FindConfig("MIN_TIMER_HEIGHT", UIConfig.timerMinHeight);
-          hCfg.FindConfig("MAX_TIMER_HEIGHT", UIConfig.timerMaxHeight);
-          hCfg.FindConfig("DEFAULT_TIMER_COLOR_R", UIConfig.timer_R);
-          hCfg.FindConfig("DEFAULT_TIMER_COLOR_G", UIConfig.timer_G);
-          hCfg.FindConfig("DEFAULT_TIMER_COLOR_B", UIConfig.timer_B);
-          hCfg.FindConfig("DEFAULT_TIMER_COLOR_A", UIConfig.timer_A);
+          hCfg.FindConfig(TIMER_X, UIConfig.timer_X);
+          hCfg.FindConfig(TIMER_Y, UIConfig.timer_Y);
+          hCfg.FindConfig(DEFAULT_TIMER_WIDTH, UIConfig.timerWidth);
+          hCfg.FindConfig(MIN_TIMER_HEIGHT, UIConfig.timerMinHeight);
+          hCfg.FindConfig(MAX_TIMER_HEIGHT, UIConfig.timerMaxHeight);
+          hCfg.FindConfig(DEFAULT_TIMER_COLOR_R, UIConfig.timer_R);
+          hCfg.FindConfig(DEFAULT_TIMER_COLOR_G, UIConfig.timer_G);
+          hCfg.FindConfig(DEFAULT_TIMER_COLOR_B, UIConfig.timer_B);
+          hCfg.FindConfig(DEFAULT_TIMER_COLOR_A, UIConfig.timer_A);
 
           return true;
      }
