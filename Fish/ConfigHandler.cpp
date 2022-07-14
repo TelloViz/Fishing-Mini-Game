@@ -64,7 +64,7 @@ bool ConfigHandler::FindConfig(string key, string& value)
      }
      catch (const std::exception&)
      {
-
+          cerr << "Config " << key << " not found" << endl;
      }
      
      return true;
@@ -79,9 +79,10 @@ bool ConfigHandler::AlterValue(string key, string newVal)
 bool ConfigHandler::ParseConfigFile(const vector<string>& lines)
 {
      string k{}, v{};
-     bool equalsFound = false;
+     
      for (auto const& line : lines)
      {
+          bool equalsFound = false;
           for (auto const& i : line)
           {
                if(i == '=')
@@ -104,8 +105,7 @@ bool ConfigHandler::ParseConfigFile(const vector<string>& lines)
           }
           keys.push_back(k);
           configValueMap.insert(std::pair<string, string>(k, v));
-          v = k = string{};
-          equalsFound = false;
+          v = k = string{};   
 
 
           
